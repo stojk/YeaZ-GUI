@@ -22,6 +22,17 @@ import argparse
 import skimage
 import neural_network as nn
 
+import os
+import logging
+
+# Configure the root logger
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s %(funcName)s: %(message)s',
+    level=os.environ.get("LOGLEVEL", "WARNING"),
+    filename='yeaz_GUI.log'
+)
+log = logging.getLogger(__name__)
+
 def LaunchPrediction(im, mic_type, pretrained_weights=None):
     """It launches the neural neutwork on the current image and creates 
     an hdf file with the prediction for the time T and corresponding FOV. 
@@ -74,7 +85,7 @@ def LaunchInstanceSegmentation(reader, image_type, fov_indices=[0], time_value1=
             im = reader.LoadOneImage(t, fov_ind)
 
             try:
-                pred = LaunchPrediction(im, mic_type, pretrained_weights=path_to_weights)
+                pred = LaunchPrediction(im, image_type, pretrained_weights=path_to_weights)
             except ValueError:
                 print('Error! ',
                       'The neural network weight files could not '
