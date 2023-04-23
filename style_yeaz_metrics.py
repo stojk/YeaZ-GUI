@@ -42,41 +42,6 @@ def initialzie_options():
 
     return opt
 
-def style_transfer(opt, epoch_range):
-    
-    # create a dataset given opt.dataset_mode and other options
-    dataset = create_dataset(opt)  
-    
-    # create a model given opt.model and other options
-    model = create_model(opt)
-
-    for epoch in epoch_range:
-
-        opt.epoch = str(epoch)
-        # create a webpage for viewing the results
-        web_dir = os.path.join(opt.results_dir, opt.name, '{}_{}'.format(opt.phase, opt.epoch))  # define the website directory
-        print('creating web directory', web_dir)
-        webpage = html.HTML(web_dir, 'Experiment = %s, Phase = %s, Epoch = %s' % (opt.name, opt.phase, opt.epoch))
-
-        for i, data in enumerate(dataset):
-            if i == 0:
-                model.data_dependent_initialize(data)
-                # regular setup: load and print networks; create schedulers
-                model.setup(opt)              
-                # model.parallelize()
-                if opt.eval:
-                    model.eval()
-            if i >= opt.num_test:  # only apply our model to opt.num_test images.
-                break
-            model.set_input(data)  # unpack data from data loader
-            model.test()           # run inference
-            visuals = model.get_current_visuals()  # get image results
-            img_path = model.get_image_paths()     # get image paths
-            if i % 5 == 0:  # save images to an HTML file
-                print('processing (%04d)-th image... %s' % (i, img_path))
-            save_images(webpage, visuals, img_path, width=opt.display_winsize)
-        webpage.save()  # save the HTML
-
 def yeaz_segmentation(opt, epoch_range, style_transfer_path):
     for epoch in epoch_range:
 
